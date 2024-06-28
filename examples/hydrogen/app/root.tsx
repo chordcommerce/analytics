@@ -1,4 +1,4 @@
-import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
+import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   Links,
@@ -15,6 +15,7 @@ import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from '~/components/PageLayout';
+import {ChordAnalytics} from '~/components/ChordAnalytics';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 
 export type RootLoader = typeof loader;
@@ -76,6 +77,13 @@ export async function loader(args: LoaderFunctionArgs) {
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+    },
+    chord: {
+      domain: env.PUBLIC_STORE_DOMAIN,
+      omsId: env.PUBLIC_CHORD_OMS_ID,
+      storeId: env.PUBLIC_CHORD_STORE_ID,
+      tenantId: env.PUBLIC_CHORD_TENANT_ID,
+      segmentWriteKey: env.PUBLIC_SEGMENT_WRITE_KEY,
     },
   });
 }
@@ -150,6 +158,15 @@ function Layout({children}: {children?: React.ReactNode}) {
             consent={data.consent}
           >
             <PageLayout {...data}>{children}</PageLayout>
+            <ChordAnalytics
+              currency="USD"
+              domain={data.chord.domain}
+              locale="en-US"
+              omsId={data.chord.omsId}
+              segmentWriteKey={data.chord.segmentWriteKey}
+              storeId={data.chord.storeId}
+              tenantId={data.chord.tenantId}
+            />
           </Analytics.Provider>
         ) : (
           children
