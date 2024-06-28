@@ -21,4 +21,4 @@ export const CUSTOMER_UPDATE_MUTATION = `#graphql
       }
     }
   }
-` as const;
+` as const

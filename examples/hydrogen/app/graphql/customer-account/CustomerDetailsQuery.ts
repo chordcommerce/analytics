@@ -27,7 +27,7 @@ export const CUSTOMER_FRAGMENT = `#graphql
     zip
     phoneNumber
   }
-` as const;
+` as const
 
 // NOTE: https://shopify.dev/docs/api/customer/latest/queries/customer
 export const CUSTOMER_DETAILS_QUERY = `#graphql
@@ -37,4 +37,4 @@ export const CUSTOMER_DETAILS_QUERY = `#graphql
     }
   }
   ${CUSTOMER_FRAGMENT}
-` as const;
+` as const

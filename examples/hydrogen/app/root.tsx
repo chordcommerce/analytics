@@ -1,5 +1,10 @@
-import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {
+  useNonce,
+  getShopAnalytics,
+  Analytics,
+  Script,
+} from '@shopify/hydrogen'
+import { defer, type LoaderFunctionArgs } from '@shopify/remix-oxygen'
 import {
   Links,
   Meta,
@@ -10,15 +15,15 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   type ShouldRevalidateFunction,
-} from '@remix-run/react';
-import favicon from '~/assets/favicon.svg';
-import resetStyles from '~/styles/reset.css?url';
-import appStyles from '~/styles/app.css?url';
-import {PageLayout} from '~/components/PageLayout';
-import {ChordAnalytics} from '~/components/ChordAnalytics';
-import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+} from '@remix-run/react'
+import favicon from '~/assets/favicon.svg'
+import resetStyles from '~/styles/reset.css?url'
+import appStyles from '~/styles/app.css?url'
+import { PageLayout } from '~/components/PageLayout'
+import { ChordAnalytics } from '~/components/ChordAnalytics'
+import { FOOTER_QUERY, HEADER_QUERY } from '~/lib/fragments'
 
-export type RootLoader = typeof loader;
+export type RootLoader = typeof loader
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -30,21 +35,21 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 }) => {
   // revalidate when a mutation is performed e.g add to cart, login...
   if (formMethod && formMethod !== 'GET') {
-    return true;
+    return true
   }
 
   // revalidate when manually revalidating via useRevalidator
   if (currentUrl.toString() === nextUrl.toString()) {
-    return true;
+    return true
   }
 
-  return false;
-};
+  return false
+}
 
 export function links() {
   return [
-    {rel: 'stylesheet', href: resetStyles},
-    {rel: 'stylesheet', href: appStyles},
+    { rel: 'stylesheet', href: resetStyles },
+    { rel: 'stylesheet', href: appStyles },
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
@@ -53,18 +58,18 @@ export function links() {
       rel: 'preconnect',
       href: 'https://shop.app',
     },
-    {rel: 'icon', type: 'image/svg+xml', href: favicon},
-  ];
+    { rel: 'icon', type: 'image/svg+xml', href: favicon },
+  ]
 }
 
 export async function loader(args: LoaderFunctionArgs) {
   // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+  const deferredData = loadDeferredData(args)
 
   // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
+  const criticalData = await loadCriticalData(args)
 
-  const {storefront, env} = args.context;
+  const { storefront, env } = args.context
 
   return defer({
     ...deferredData,
@@ -85,15 +90,15 @@ export async function loader(args: LoaderFunctionArgs) {
       tenantId: env.PUBLIC_CHORD_TENANT_ID,
       segmentWriteKey: env.PUBLIC_SEGMENT_WRITE_KEY,
     },
-  });
+  })
 }
 
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
-async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const {storefront} = context;
+async function loadCriticalData({ context }: LoaderFunctionArgs) {
+  const { storefront } = context
 
   const [header] = await Promise.all([
     storefront.query(HEADER_QUERY, {
@@ -103,11 +108,11 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
       },
     }),
     // Add other queries here, so that they are loaded in parallel
-  ]);
+  ])
 
   return {
     header,
-  };
+  }
 }
 
 /**
@@ -115,8 +120,8 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
  * fetched after the initial page load. If it's unavailable, the page should still 200.
  * Make sure to not throw any errors here, as it will cause the page to 500.
  */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  const {storefront, customerAccount, cart} = context;
+function loadDeferredData({ context }: LoaderFunctionArgs) {
+  const { storefront, customerAccount, cart } = context
 
   // defer the footer query (below the fold)
   const footer = storefront
@@ -128,19 +133,19 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
     })
     .catch((error) => {
       // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
+      console.error(error)
+      return null
+    })
   return {
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
-  };
+  }
 }
 
-function Layout({children}: {children?: React.ReactNode}) {
-  const nonce = useNonce();
-  const data = useRouteLoaderData<RootLoader>('root');
+function Layout({ children }: { children?: React.ReactNode }) {
+  const nonce = useNonce()
+  const data = useRouteLoaderData<RootLoader>('root')
 
   return (
     <html lang="en">
@@ -175,7 +180,7 @@ function Layout({children}: {children?: React.ReactNode}) {
         <Scripts nonce={nonce} />
       </body>
     </html>
-  );
+  )
 }
 
 export default function App() {
@@ -183,19 +188,19 @@ export default function App() {
     <Layout>
       <Outlet />
     </Layout>
-  );
+  )
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
-  let errorMessage = 'Unknown error';
-  let errorStatus = 500;
+  const error = useRouteError()
+  let errorMessage = 'Unknown error'
+  let errorStatus = 500
 
   if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
-    errorStatus = error.status;
+    errorMessage = error?.data?.message ?? error.data
+    errorStatus = error.status
   } else if (error instanceof Error) {
-    errorMessage = error.message;
+    errorMessage = error.message
   }
 
   return (
@@ -210,5 +215,5 @@ export function ErrorBoundary() {
         )}
       </div>
     </Layout>
-  );
+  )
 }

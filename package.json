@@ -1,0 +1,42 @@
+{
+  "name": "chord-analytics",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "eslint . --ext .js,.ts",
+    "prettier:check": "prettier -c .",
+    "prettier:fix": "prettier -w .",
+    "prepare": "husky install",
+    "commitlint": "commitlint"
+  },
+  "devDependencies": {
+    "@chordcommerce/eslint-config": "^1.0.0",
+    "@chordcommerce/prettier": "^1.0.0",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/eslint": "^8.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-next": ">=11.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^2.5.1",
+    "semantic-release": "^18.0.1",
+    "semantic-release-monorepo": "^7.0.5"
+  },
+  "workspaces": [
+    "examples/*",
+    "packages/*"
+  ],
+  "prettier": "@chordcommerce/prettier"
+}

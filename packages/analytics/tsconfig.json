@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": false,
+    "moduleResolution": "node16",
+    "module": "node16",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "ES6",
+    "skipLibCheck": true,
+    "noImplicitAny": false
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/node_modules/*"]
+}

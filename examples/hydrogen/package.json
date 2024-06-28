@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit",
     "codegen": "shopify hydrogen codegen"
   },
-  "prettier": "@shopify/prettier-config",
   "dependencies": {
     "@chordcommerce/analytics": "^1.8.0",
     "@remix-run/react": "^2.9.2",

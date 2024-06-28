@@ -1,9 +1,9 @@
-import type {HydrogenSession} from '@shopify/hydrogen';
+import type { HydrogenSession } from '@shopify/hydrogen'
 import {
   createCookieSessionStorage,
   type SessionStorage,
   type Session,
-} from '@shopify/remix-oxygen';
+} from '@shopify/remix-oxygen'
 
 /**
  * This is a custom session implementation for your Hydrogen shop.
@@ -11,14 +11,14 @@ import {
  * swap out the cookie-based implementation with something else!
  */
 export class AppSession implements HydrogenSession {
-  public isPending = false;
+  public isPending = false
 
-  #sessionStorage;
-  #session;
+  #sessionStorage
+  #session
 
   constructor(sessionStorage: SessionStorage, session: Session) {
-    this.#sessionStorage = sessionStorage;
-    this.#session = session;
+    this.#sessionStorage = sessionStorage
+    this.#session = session
   }
 
   static async init(request: Request, secrets: string[]) {
@@ -30,43 +30,43 @@ export class AppSession implements HydrogenSession {
         sameSite: 'lax',
         secrets,
       },
-    });
+    })
 
     const session = await storage
       .getSession(request.headers.get('Cookie'))
-      .catch(() => storage.getSession());
+      .catch(() => storage.getSession())
 
-    return new this(storage, session);
+    return new this(storage, session)
   }
 
   get has() {
-    return this.#session.has;
+    return this.#session.has
   }
 
   get get() {
-    return this.#session.get;
+    return this.#session.get
   }
 
   get flash() {
-    return this.#session.flash;
+    return this.#session.flash
   }
 
   get unset() {
-    this.isPending = true;
-    return this.#session.unset;
+    this.isPending = true
+    return this.#session.unset
   }
 
   get set() {
-    this.isPending = true;
-    return this.#session.set;
+    this.isPending = true
+    return this.#session.set
   }
 
   destroy() {
-    return this.#sessionStorage.destroySession(this.#session);
+    return this.#sessionStorage.destroySession(this.#session)
   }
 
   commit() {
-    this.isPending = false;
-    return this.#sessionStorage.commitSession(this.#session);
+    this.isPending = false
+    return this.#sessionStorage.commitSession(this.#session)
   }
 }

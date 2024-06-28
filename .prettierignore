@@ -1,0 +1,14 @@
+CHANGELOG.md
+package.json
+.cache
+.shadowenv.d
+.vscode
+build
+node_modules
+prisma
+public
+.github
+tmp
+*.yml
+.shopify
+dist

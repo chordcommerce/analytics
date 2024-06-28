@@ -1,0 +1,10 @@
+node_modules
+dist
+.cache
+build
+prisma/dev.sqlite
+prisma/dev.sqlite-journal
+database.sqlite
+.env
+.DS_Store
+yarn-error.log

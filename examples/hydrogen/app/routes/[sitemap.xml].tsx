@@ -1,40 +1,43 @@
-import {flattenConnection} from '@shopify/hydrogen';
-import type {LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import type {SitemapQuery} from 'storefrontapi.generated';
+import { flattenConnection } from '@shopify/hydrogen'
+import type { LoaderFunctionArgs } from '@shopify/remix-oxygen'
+import type { SitemapQuery } from 'storefrontapi.generated'
 
 /**
  * the google limit is 50K, however, the storefront API
  * allows querying only 250 resources per pagination page
  */
-const MAX_URLS = 250;
+const MAX_URLS = 250
 
 type Entry = {
-  url: string;
-  lastMod?: string;
-  changeFreq?: string;
+  url: string
+  lastMod?: string
+  changeFreq?: string
   image?: {
-    url: string;
-    title?: string;
-    caption?: string;
-  };
-};
+    url: string
+    title?: string
+    caption?: string
+  }
+}
 
 export async function loader({
   request,
-  context: {storefront},
+  context: { storefront },
 }: LoaderFunctionArgs) {
   const data = await storefront.query(SITEMAP_QUERY, {
     variables: {
       urlLimits: MAX_URLS,
       language: storefront.i18n.language,
     },
-  });
+  })
 
   if (!data) {
-    throw new Response('No data found', {status: 404});
+    throw new Response('No data found', { status: 404 })
   }
 
-  const sitemap = generateSitemap({data, baseUrl: new URL(request.url).origin});
+  const sitemap = generateSitemap({
+    data,
+    baseUrl: new URL(request.url).origin,
+  })
 
   return new Response(sitemap, {
     headers: {
@@ -42,73 +45,73 @@ export async function loader({
 
       'Cache-Control': `max-age=${60 * 60 * 24}`,
     },
-  });
+  })
 }
 
 function xmlEncode(string: string) {
-  return string.replace(/[&<>'"]/g, (char) => `&#${char.charCodeAt(0)};`);
+  return string.replace(/[&<>'"]/g, (char) => `&#${char.charCodeAt(0)};`)
 }
 
 function generateSitemap({
   data,
   baseUrl,
 }: {
-  data: SitemapQuery;
-  baseUrl: string;
+  data: SitemapQuery
+  baseUrl: string
 }) {
   const products = flattenConnection(data.products)
     .filter((product) => product.onlineStoreUrl)
     .map((product) => {
-      const url = `${baseUrl}/products/${xmlEncode(product.handle)}`;
+      const url = `${baseUrl}/products/${xmlEncode(product.handle)}`
 
       const productEntry: Entry = {
         url,
         lastMod: product.updatedAt,
         changeFreq: 'daily',
-      };
+      }
 
       if (product.featuredImage?.url) {
         productEntry.image = {
           url: xmlEncode(product.featuredImage.url),
-        };
+        }
 
         if (product.title) {
-          productEntry.image.title = xmlEncode(product.title);
+          productEntry.image.title = xmlEncode(product.title)
         }
 
         if (product.featuredImage.altText) {
-          productEntry.image.caption = xmlEncode(product.featuredImage.altText);
+          productEntry.image.caption = xmlEncode(product.featuredImage.altText)
         }
       }
 
-      return productEntry;
-    });
+      return productEntry
+    })
 
   const collections = flattenConnection(data.collections)
     .filter((collection) => collection.onlineStoreUrl)
     .map((collection) => {
-      const url = `${baseUrl}/collections/${collection.handle}`;
+      const url = `${baseUrl}/collections/${collection.handle}`
 
       return {
         url,
         lastMod: collection.updatedAt,
         changeFreq: 'daily',
-      };
-    });
+      }
+    })
 
   const pages = flattenConnection(data.pages)
     .filter((page) => page.onlineStoreUrl)
     .map((page) => {
-      const url = `${baseUrl}/pages/${page.handle}`;
+      const url = `${baseUrl}/pages/${page.handle}`
 
       return {
         url,
         lastMod: page.updatedAt,
         changeFreq: 'weekly',
-      };
-    });
+      }
+    })
 
-  const urls = [...products, ...collections, ...pages];
+  const urls = [...products, ...collections, ...pages]
 
   return `
     <urlset
@@ -116,17 +119,17 @@ function generateSitemap({
       xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
     >
       ${urls.map(renderUrlTag).join('')}
-    </urlset>`;
+    </urlset>`
 }
 
-function renderUrlTag({url, lastMod, changeFreq, image}: Entry) {
+function renderUrlTag({ url, lastMod, changeFreq, image }: Entry) {
   const imageTag = image
     ? `<image:image>
         <image:loc>${image.url}</image:loc>
         <image:title>${image.title ?? ''}</image:title>
         <image:caption>${image.caption ?? ''}</image:caption>
       </image:image>`.trim()
-    : '';
+    : ''
 
   return `
     <url>
@@ -135,7 +138,7 @@ function renderUrlTag({url, lastMod, changeFreq, image}: Entry) {
       <changefreq>${changeFreq}</changefreq>
       ${imageTag}
     </url>
-  `.trim();
+  `.trim()
 }
 
 const SITEMAP_QUERY = `#graphql
@@ -174,4 +177,4 @@ const SITEMAP_QUERY = `#graphql
       }
     }
   }
-` as const;
+` as const

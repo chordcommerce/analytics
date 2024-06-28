@@ -1,0 +1,61 @@
+name: Semantic Release
+
+on:
+  workflow_run:
+    workflows: [Test]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: "Do a dry run release preview instead of a real release [true/false]"
+        required: true
+        default: 'true'  
+
+jobs:
+  release:
+    name: Publish packages
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Debug Dry run flag
+        run: echo "Dry run? '${{ github.event.inputs.dryRun }}'"
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+      - name: Install dependencies
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+          echo "@chordcommerce:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          yarn install --frozen-lockfile
+
+      - name: Build @chordcommerce/analytics package
+        run: yarn workspace @chordcommerce/analytics build
+
+      - name: Release @chordcommerce/analytics package (Dry Run)
+        if: ${{ github.event.inputs.dryRun == 'true'}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: yarn workspace @chordcommerce/analytics semantic-release --dry-run
+
+      - name: Release @chordcommerce/analytics package
+        if: ${{ github.event.inputs.dryRun != 'true'}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: yarn workspace @chordcommerce/analytics semantic-release

@@ -1,11 +1,11 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from '@remix-run/react';
-import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import { Suspense } from 'react'
+import { Await, NavLink } from '@remix-run/react'
+import type { FooterQuery, HeaderQuery } from 'storefrontapi.generated'
 
 interface FooterProps {
-  footer: Promise<FooterQuery | null>;
-  header: HeaderQuery;
-  publicStoreDomain: string;
+  footer: Promise<FooterQuery | null>
+  header: HeaderQuery
+  publicStoreDomain: string
 }
 
 export function Footer({
@@ -29,7 +29,7 @@ export function Footer({
         )}
       </Await>
     </Suspense>
-  );
+  )
 }
 
 function FooterMenu({
@@ -37,22 +37,22 @@ function FooterMenu({
   primaryDomainUrl,
   publicStoreDomain,
 }: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
+  menu: FooterQuery['menu']
+  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url']
+  publicStoreDomain: string
 }) {
   return (
     <nav className="footer-menu" role="navigation">
       {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
+        if (!item.url) return null
         // if the url is internal, we strip the domain
         const url =
           item.url.includes('myshopify.com') ||
           item.url.includes(publicStoreDomain) ||
           item.url.includes(primaryDomainUrl)
             ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
+            : item.url
+        const isExternal = !url.startsWith('/')
         return isExternal ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
             {item.title}
@@ -67,10 +67,10 @@ function FooterMenu({
           >
             {item.title}
           </NavLink>
-        );
+        )
       })}
     </nav>
-  );
+  )
 }
 
 const FALLBACK_FOOTER_MENU = {
@@ -113,17 +113,17 @@ const FALLBACK_FOOTER_MENU = {
       items: [],
     },
   ],
-};
+}
 
 function activeLinkStyle({
   isActive,
   isPending,
 }: {
-  isActive: boolean;
-  isPending: boolean;
+  isActive: boolean
+  isPending: boolean
 }) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
     color: isPending ? 'grey' : 'white',
-  };
+  }
 }
