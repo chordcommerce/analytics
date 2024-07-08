@@ -1,0 +1,19 @@
+{
+  "user_id": "6586523189234",
+  "rfm_score_bucket": 1,
+  "product_recommendations": [
+    {
+      "index": 1,
+      "product_oms_id": "7912089157811",
+      "product_name": "Bamboo Toothbrush"
+    },
+    {
+      "index": 2,
+      "product_oms_id": "7911941275827",
+      "product_name": "Herbal Infusion Tea Set"
+    }
+  ],
+  "last_session_utm_source": "google",
+  "last_session_utm_medium": "ppc",
+  "last_session_utm_campaign": "spring_sale"
+}
