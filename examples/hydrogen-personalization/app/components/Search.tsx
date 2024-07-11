@@ -185,6 +185,11 @@ function SearchResultsProductsGrid({
                     <small>
                       <Money data={product.variants.nodes[0].price} />
                     </small>
+                    {product.papiRecommendation && (
+                      <span style={{color: 'red'}}>
+                        **recommended for you**
+                      </span>
+                    )}
                   </div>
                 </Link>
               </div>
